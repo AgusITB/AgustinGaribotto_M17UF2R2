@@ -1,18 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private PlayerControls playerControls;
+    private void OnEnable()
     {
-        
+        playerControls.Enable();
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        playerControls = new PlayerControls();
+        playerControls.Player.Jump.performed += Jump;
+
     }
+
+    void Jump(InputAction.CallbackContext context)
+    {
+        float num = context.ReadValue<float>();
+
+        if (num == 1)
+        {
+            Debug.Log("MantainJump");
+        }
+        else if (num == 0)
+        {
+            Debug.Log("Tap");
+        }
+
+    }
+
+
 }
