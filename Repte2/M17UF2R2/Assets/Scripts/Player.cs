@@ -32,12 +32,18 @@ public class Player : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+    private Transform cameraTransform;
+
     [SerializeField]
     private float playerSpeed = 2.0f;
     [SerializeField]
     private float jumpHeight = 2f;
     [SerializeField]
     private float gravityValue = -9.81f;
+    [SerializeField]
+    private float rotationSpeed = 2f;
+
+
     private void OnEnable()
     {
         playerControls.Enable();
@@ -66,11 +72,16 @@ public class Player : MonoBehaviour
         isMovingnimationParamenterID = Animator.StringToHash("isMoving");
         isJumpingParamenterID = Animator.StringToHash("isJumping");
         isGroundedParamenterID = Animator.StringToHash("isGrounded");
+
+        cameraTransform = Camera.main.transform;
     }
     private void Update()
     {
         // Check current inputs 
         input = context.ReadValue<Vector2>();
+        isMoving = input.x != 0 || input.y != 0;
+        groundedPlayer = controller.isGrounded;
+
         Animate();
         Move();
     }
@@ -78,8 +89,6 @@ public class Player : MonoBehaviour
 
     void Animate()
     {
-        isMoving = input.x != 0 || input.y != 0;
-
         if (isMoving) currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
         else currentAnimationBlendVector = input;
         //Apply inputs in animator 
@@ -92,11 +101,14 @@ public class Player : MonoBehaviour
 
         if (!isSprinting) animator.SetFloat(magnitudeAnimationParamenterID, currentAnimationBlendVector.magnitude);
 
+        //Rotate towards camera direction
+        Quaternion rotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
+        transform.rotation = rotation;
+        //Quaternion.Lerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+
     }
     private void Move()
     {
-        groundedPlayer = controller.isGrounded;
-       
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
@@ -104,6 +116,8 @@ public class Player : MonoBehaviour
         }
 
         Vector3 move = new(input.x, 0, input.y);
+        move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
+        move.y = 0f;
 
         if (isSprinting) playerSpeed = 4f;
         else playerSpeed = 2f;
@@ -111,10 +125,10 @@ public class Player : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+
     }
     private void GetSprintInput(InputAction.CallbackContext context, bool isSprint)
     {
-
         isSprinting = isMoving && isSprint;
         float magnitude = isSprinting ? context.ReadValue<float>() + 1.0f : 0.0f;
         animator.SetFloat(magnitudeAnimationParamenterID, magnitude);
@@ -126,14 +140,12 @@ public class Player : MonoBehaviour
     }
     private void GetJumpInputs(InputAction.CallbackContext context)
     {
-        float num = context.ReadValue<float>();
-
         if (groundedPlayer)
         {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
             isJumping = true;
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityValue);
         }
-
+          
     }
 
 
