@@ -1,11 +1,11 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.InputSystem.XR;
 
 public class Player : MonoBehaviour
 {
-
+    // Animation variables
     [SerializeField] float animationSmoothTime = 0.5f;
     Animator animator;
     private PlayerControls playerControls;
@@ -15,15 +15,29 @@ public class Player : MonoBehaviour
     int magnitudeAnimationParamenterID;
     int isSprintingAnimationParamenterID;
     int isMovingnimationParamenterID;
+    int isJumpingParamenterID;
+    int isGroundedParamenterID;
 
     [SerializeField] bool isMoving = false;
     [SerializeField] bool isSprinting = false;
+    [SerializeField] bool isJumping = false;
     Vector2 currentAnimationBlendVector;
     Vector2 animationVelocity;
 
     InputAction.CallbackContext context;
     Vector2 input;
 
+
+    // Movement variables
+    private CharacterController controller;
+    private Vector3 playerVelocity;
+    private bool groundedPlayer;
+    [SerializeField]
+    private float playerSpeed = 2.0f;
+    [SerializeField]
+    private float jumpHeight = 2f;
+    [SerializeField]
+    private float gravityValue = -9.81f;
     private void OnEnable()
     {
         playerControls.Enable();
@@ -31,10 +45,12 @@ public class Player : MonoBehaviour
     private void OnDisable()
     {
         playerControls.Disable();
+        
     }
 
     private void Awake()
     {
+        controller = gameObject.GetComponent<CharacterController>();
         //Inputs
         playerControls = new PlayerControls();
         playerControls.Player.Jump.performed += GetJumpInputs;
@@ -48,18 +64,20 @@ public class Player : MonoBehaviour
         magnitudeAnimationParamenterID = Animator.StringToHash("Magnitude");
         isSprintingAnimationParamenterID = Animator.StringToHash("isSprinting");
         isMovingnimationParamenterID = Animator.StringToHash("isMoving");
+        isJumpingParamenterID = Animator.StringToHash("isJumping");
+        isGroundedParamenterID = Animator.StringToHash("isGrounded");
     }
     private void Update()
     {
+        // Check current inputs 
+        input = context.ReadValue<Vector2>();
         Animate();
+        Move();
     }
 
 
     void Animate()
     {
-
-        // Check current inputs 
-        input = context.ReadValue<Vector2>();
         isMoving = input.x != 0 || input.y != 0;
 
         if (isMoving) currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
@@ -68,8 +86,31 @@ public class Player : MonoBehaviour
         animator.SetFloat(moveXAnimationParamenterID, currentAnimationBlendVector.x);
         animator.SetFloat(moveZAnimationParamenterID, currentAnimationBlendVector.y);
         animator.SetBool(isMovingnimationParamenterID, isMoving);
+        animator.SetBool(isGroundedParamenterID, groundedPlayer);
+        animator.SetBool(isJumpingParamenterID, isJumping);
+
+
         if (!isSprinting) animator.SetFloat(magnitudeAnimationParamenterID, currentAnimationBlendVector.magnitude);
 
+    }
+    private void Move()
+    {
+        groundedPlayer = controller.isGrounded;
+       
+        if (groundedPlayer && playerVelocity.y < 0)
+        {
+            playerVelocity.y = 0f;
+            isJumping = false;
+        }
+
+        Vector3 move = new(input.x, 0, input.y);
+
+        if (isSprinting) playerSpeed = 4f;
+        else playerSpeed = 2f;
+        controller.Move(playerSpeed  * Time.deltaTime * move);
+
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
     }
     private void GetSprintInput(InputAction.CallbackContext context, bool isSprint)
     {
@@ -86,13 +127,11 @@ public class Player : MonoBehaviour
     private void GetJumpInputs(InputAction.CallbackContext context)
     {
         float num = context.ReadValue<float>();
-        if (num == 1)
+
+        if (groundedPlayer)
         {
-            Debug.Log("MantainJump");
-        }
-        else if (num == 0)
-        {
-            Debug.Log("Tap");
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            isJumping = true;
         }
 
     }
