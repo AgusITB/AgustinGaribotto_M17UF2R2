@@ -23,7 +23,7 @@ public class InputManager : MonoBehaviour
         else _instance = this;
         playerControls = new PlayerControls();
 
-        playerControls.Player.Jump.performed += context => playerJumped.Invoke();
+        playerControls.Player.Jump.started += context => playerJumped.Invoke();
 
     }
     private void OnEnable()

@@ -26,16 +26,18 @@ public class PlayerController : MonoBehaviour
 
     // Movement variables
     private CharacterController controller;
-    private Vector3 playerVelocity;
+    [SerializeField] private Vector3 playerVelocity;
     private Transform cameraTransform;
 
 
     //Player Variables
-    [SerializeField] private float playerSpeed = 2.0f;
+    [SerializeField] private float playerSpeed;
+    private readonly float walkSpeed = 3.0f;
+    private readonly float sprintSpeed = 6.0f;
     [SerializeField] private float jumpHeight = 2f;
-    [SerializeField] private float gravityValue = -9.81f;
-    [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float magnitude = 1f;
+    private float gravityValue = -9.81f;
+    private float rotationSpeed = 5f;
+    private float magnitude = 1f;
 
     private Vector2 input;
 
@@ -100,9 +102,9 @@ public class PlayerController : MonoBehaviour
         move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
 
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
-        
-        playerSpeed = isSprinting ? 4f : 2f;
 
+        playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        //Vector3.Lerp(playerVelocity, move, Time.deltaTime);    
         controller.Move(playerSpeed * Time.deltaTime * move);
 
     }
