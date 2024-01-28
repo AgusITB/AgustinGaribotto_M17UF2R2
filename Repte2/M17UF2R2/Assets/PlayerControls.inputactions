@@ -15,7 +15,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "MoveStart",
+                    "name": "Move",
                     "type": "Value",
                     "id": "fa8b2e30-49ec-450a-9011-e64b9e20f6c2",
                     "expectedControlType": "Vector2",
@@ -24,22 +24,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "SprintStart",
+                    "name": "Sprint",
                     "type": "Button",
                     "id": "b6f380bf-d243-4d3d-a73e-e8d726efad63",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "SprintFinish",
-                    "type": "Button",
-                    "id": "580fe163-4900-492b-b5eb-8621b22192e5",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 },
                 {
                     "name": "Look",
@@ -70,7 +61,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveStart",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -81,7 +72,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveStart",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -92,7 +83,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveStart",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -103,7 +94,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveStart",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -114,7 +105,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveStart",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -125,18 +116,7 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "SprintStart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "83235b92-6ac0-4583-8ab9-10736a32febb",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "Press(behavior=1)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SprintFinish",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
