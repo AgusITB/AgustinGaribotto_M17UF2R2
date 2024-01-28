@@ -1,14 +1,7 @@
 using System.Collections;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Rendering;
-using UnityEngine.Windows;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     // Animation variables
     [SerializeField] float animationSmoothTime = 1f;
