@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using static InputManager;
+using UnityEngine.Animations;
+using UnityEngine.Animations.Rigging;
 
 public class PlayerController : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class PlayerController : MonoBehaviour
 
     // Movement variables
     private CharacterController controller;
-    
+
     private Vector3 playerVelocity;
     private Transform cameraTransform;
 
@@ -37,20 +38,20 @@ public class PlayerController : MonoBehaviour
     //Player variables
     private float playerSpeed;
     private float magnitude = 1f;
-    private const float walkSpeed = 3.0f;
-    private const float sprintSpeed = 6.0f;
-    private const float jumpHeight = 2f;
-    private const float gravityValue = -9.81f;
-    private const float rotationSpeed = 15f;
+    private float walkSpeed = 3.0f;
+    private float sprintSpeed = 6.0f;
+    private float jumpHeight = 2f;
+    private float gravityValue = -9.81f;
+    private float rotationSpeed = 15f;
+    private float weight;
 
-    
     //Input variables
     private InputManager inputManager;
     private Vector2 input;
 
     // Death delegates
     public delegate void OnPlayerDied();
-    public static event OnPlayerAimed PlayerDied;
+    public static event OnPlayerDied PlayerDied;
 
     // Singleton
     private static PlayerController _instance;
@@ -58,6 +59,13 @@ public class PlayerController : MonoBehaviour
     {
         get { return _instance; }
     }
+
+    [SerializeField]
+    private Transform aimTarget;
+    [SerializeField]
+    private float aimDistance = 40f;
+
+    private Rig pistolArmRig;
 
     private void Start()
     {
@@ -69,11 +77,12 @@ public class PlayerController : MonoBehaviour
         if (_instance != null && _instance != this) Destroy(gameObject);
         else _instance = this;
 
-        SetComponents();  
+        SetComponents();
         SetAnimatorIDs();
     }
     private void SetComponents()
     {
+        pistolArmRig = GetComponentInChildren<Rig>();
         controller = gameObject.GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         cameraTransform = Camera.main.transform;
@@ -91,19 +100,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerJumped += Jump;
-        PlayerAimed += StartAiming;
+        InputManager.PlayerJumped += Jump;
+        InputManager.PlayerAimed += StartAiming;
         InputManager.PlayerDied += Die;
     }
     private void OnDisable()
     {
-        PlayerJumped -= Jump;
-        PlayerAimed -= StartAiming;
+        InputManager.PlayerJumped -= Jump;
+        InputManager.PlayerAimed -= StartAiming;
         InputManager.PlayerDied -= Die;
     }
     private void Update()
     {
         // Check current inputs 
+
+        aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
         input = inputManager.GetPlayerMovement();
         CheckIfIsMoving();
         groundedPlayer = controller.isGrounded;
@@ -143,7 +154,7 @@ public class PlayerController : MonoBehaviour
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
 
         playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
-        
+
         if (controller.enabled == true)
         {
             controller.Move(playerSpeed * Time.deltaTime * move);
@@ -189,14 +200,14 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator AnimateWeightsTo(float goalValue)
     {
-        float startValue = animator.GetLayerWeight(AimLayerIndex);
+        float startValue = pistolArmRig.weight;
         for (float i = 0f; i <= 1f; i += 5f * Time.deltaTime)
         {
-            animator.SetLayerWeight(AimLayerIndex, Mathf.Lerp(startValue, goalValue, i));
+            pistolArmRig.weight = Mathf.Lerp(startValue, goalValue, i);
             yield return null;
         }
 
-        animator.SetLayerWeight(AimLayerIndex, goalValue);
+        pistolArmRig.weight = goalValue;
     }
     private void Die()
     {

@@ -2,21 +2,27 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject gun;
+    private bool gunIsActive = false;
+
 
     private void Awake()
     {
-        Cursor.visible = false;
-  
+        Cursor.visible = false; 
     }
 
     private void OnEnable()
     {
+        InputManager.PlayerAimed += ActivateWeapon;
+
         PlayerController.PlayerDied += DisablePlayer;
     }
 
     
     private void OnDisable()
     {
+        InputManager.PlayerAimed -= ActivateWeapon;
         PlayerController.PlayerDied -= DisablePlayer;
     }
 
@@ -26,5 +32,9 @@ public class GameManager : MonoBehaviour
         PlayerController.Instance.enabled = false;
         InputManager.Instance.gameObject.SetActive(false);
     }
-
+    void ActivateWeapon()
+    {
+        gunIsActive = !gunIsActive;
+        gun.SetActive(gunIsActive);      
+    }
 }
