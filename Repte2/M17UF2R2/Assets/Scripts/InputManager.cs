@@ -1,8 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Events;
-using UnityEngine.InputSystem.Utilities;
-using System.Diagnostics;
 
 public class InputManager : MonoBehaviour
 {
@@ -10,7 +6,19 @@ public class InputManager : MonoBehaviour
 
     private PlayerControls playerControls;
 
-    public UnityEvent playerJumped;
+
+    // Jump delegates
+    public delegate void OnPlayerJumped();
+    public static event OnPlayerJumped PlayerJumped;
+
+    // Aim delegates
+    public delegate void OnPlayerAimed();
+    public static event OnPlayerAimed PlayerAimed;
+
+
+    // Death delegates
+    public delegate void OnPlayerDied();
+    public static event OnPlayerAimed PlayerDied;
 
     public static InputManager Instance
     {
@@ -22,16 +30,20 @@ public class InputManager : MonoBehaviour
         if (_instance != null && _instance != this) Destroy(gameObject);
         else _instance = this;
         playerControls = new PlayerControls();
-
-        playerControls.Player.Jump.started += context => playerJumped.Invoke();
-
+    
     }
     private void OnEnable()
     {
+        playerControls.Player.Jump.started += _ => PlayerJumped.Invoke();
+        playerControls.Player.Aim.performed += _ => PlayerAimed.Invoke();
+        playerControls.Player.DieTestButton.performed += _ => PlayerDied.Invoke();
         playerControls.Enable();
     }
     private void OnDisable()
     {
+        playerControls.Player.Jump.started -= _ => PlayerJumped.Invoke();
+        playerControls.Player.Aim.performed -= _ => PlayerAimed.Invoke();
+        playerControls.Player.DieTestButton.performed -= _ => PlayerDied.Invoke();
         playerControls.Disable();
     }
 

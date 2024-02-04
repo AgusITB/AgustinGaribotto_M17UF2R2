@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,16 +6,25 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Cursor.visible = false;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+  
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        PlayerController.PlayerDied += DisablePlayer;
     }
+
+    
+    private void OnDisable()
+    {
+        PlayerController.PlayerDied -= DisablePlayer;
+    }
+
+
+    void DisablePlayer()
+    {
+        PlayerController.Instance.enabled = false;
+        InputManager.Instance.gameObject.SetActive(false);
+    }
+
 }

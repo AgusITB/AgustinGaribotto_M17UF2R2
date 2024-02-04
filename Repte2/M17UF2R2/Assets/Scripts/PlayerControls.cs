@@ -62,6 +62,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""c092ff75-ac2e-4607-a681-231602ae1a8d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DieTestButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""6f0e0323-ed14-400a-8d11-2f9aa42de557"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +170,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38ce94a9-8bc8-4544-97eb-59b0d7e7d6c4"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""668a688d-e77c-4775-9ad4-439df00babe9"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DieTestButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +204,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
+        m_Player_DieTestButton = m_Player.FindAction("DieTestButton", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -229,6 +271,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_Aim;
+    private readonly InputAction m_Player_DieTestButton;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -237,6 +281,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Look => m_Wrapper.m_Player_Look;
+        public InputAction @Aim => m_Wrapper.m_Player_Aim;
+        public InputAction @DieTestButton => m_Wrapper.m_Player_DieTestButton;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -258,6 +304,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
+            @DieTestButton.started += instance.OnDieTestButton;
+            @DieTestButton.performed += instance.OnDieTestButton;
+            @DieTestButton.canceled += instance.OnDieTestButton;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -274,6 +326,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
+            @DieTestButton.started -= instance.OnDieTestButton;
+            @DieTestButton.performed -= instance.OnDieTestButton;
+            @DieTestButton.canceled -= instance.OnDieTestButton;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -297,5 +355,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
+        void OnDieTestButton(InputAction.CallbackContext context);
     }
 }
