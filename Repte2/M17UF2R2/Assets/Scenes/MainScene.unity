@@ -331,7 +331,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.064096875, y: 0, z: 0, w: 0.9979437}
-  m_LocalPosition: {x: -0.018043153, y: 2.2904563, z: -2.2844055}
+  m_LocalPosition: {x: -0.016935444, y: 2.2904563, z: -2.2844055}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1412,6 +1412,13 @@ MonoBehaviour:
   isJumping: 0
   groundedPlayer: 0
   isAiming: 0
+  playerSpeed: 0
+  magnitude: 1
+  walkSpeed: 3
+  sprintSpeed: 6
+  jumpHeight: 0.5
+  gravityValue: -9.81
+  rotationSpeed: 15
   aimTarget: {fileID: 1514979255}
   aimDistance: 20
 --- !u!143 &1507095787
@@ -2552,7 +2559,7 @@ PrefabInstance:
     - target: {fileID: 6015050858121410008, guid: 1e4f9cfdeaa4afb4897374c5d4854d87,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.018043153
+      value: -0.016935444
       objectReference: {fileID: 0}
     - target: {fileID: 6015050858121410008, guid: 1e4f9cfdeaa4afb4897374c5d4854d87,
         type: 3}

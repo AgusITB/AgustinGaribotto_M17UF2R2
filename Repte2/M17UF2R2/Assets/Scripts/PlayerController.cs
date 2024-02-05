@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     int isMovingnimationParamenterID;
     int isJumpingParamenterID;
     int isGroundedParamenterID;
-    const int AimLayerIndex = 1;
+    
 
     // State Variables
     [SerializeField] bool isMoving = false;
@@ -36,14 +36,14 @@ public class PlayerController : MonoBehaviour
 
 
     //Player variables
-    private float playerSpeed;
-    private float magnitude = 1f;
-    private float walkSpeed = 3.0f;
-    private float sprintSpeed = 6.0f;
-    private float jumpHeight = 2f;
-    private float gravityValue = -9.81f;
-    private float rotationSpeed = 15f;
-    private float weight;
+    [SerializeField] private float playerSpeed;
+    [SerializeField] private float magnitude = 1f;
+    [SerializeField] private float walkSpeed = 3.0f;
+    [SerializeField] private float sprintSpeed = 6.0f;
+    [SerializeField] private float jumpHeight = 0.5f;
+    [SerializeField] private float gravityValue = -9.81f;
+    [SerializeField] private float rotationSpeed = 15f;
+    
 
     //Input variables
     private InputManager inputManager;
