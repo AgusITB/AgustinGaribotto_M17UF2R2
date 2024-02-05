@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -29,9 +31,11 @@ public class PlayerController : MonoBehaviour
     Vector2 animationVelocity;
 
     // Movement variables
-    private CharacterController controller;
+    Rigidbody rb;
+    private float lastYposition;
+ 
 
-    private Vector3 playerVelocity;
+
     private Transform cameraTransform;
 
 
@@ -43,7 +47,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpHeight = 0.5f;
     [SerializeField] private float gravityValue = -9.81f;
     [SerializeField] private float rotationSpeed = 15f;
-    
+    [SerializeField] private float maxForce = 1f;
 
     //Input variables
     private InputManager inputManager;
@@ -70,6 +74,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         inputManager = InputManager.Instance;
+        lastYposition = transform.position.y;
     }
     private void Awake()
     {
@@ -83,9 +88,9 @@ public class PlayerController : MonoBehaviour
     private void SetComponents()
     {
         pistolArmRig = GetComponentInChildren<Rig>();
-        controller = gameObject.GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         cameraTransform = Camera.main.transform;
+        rb = GetComponent<Rigidbody>();   
     }
     private void SetAnimatorIDs()
     {
@@ -110,65 +115,48 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerAimed -= StartAiming;
         InputManager.PlayerDied -= Die;
     }
+
+    private void FixedUpdate()
+    {
+     
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 targetVelocity = new Vector3(input.x, 0, input.y);
+        targetVelocity *= playerSpeed;
+
+        //Align direction
+        targetVelocity = transform.TransformDirection(targetVelocity);
+
+        //Calculate forces
+        Vector3 velocityChange = (targetVelocity - currentVelocity);
+
+        //Limit force
+        Vector3.ClampMagnitude(velocityChange, maxForce);
+
+        rb.AddForce(velocityChange, ForceMode.VelocityChange);
+
+    }
     private void Update()
     {
         // Check current inputs 
 
         aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
-        input = inputManager.GetPlayerMovement();
-        CheckIfIsMoving();
-        groundedPlayer = controller.isGrounded;
+        isMoving = rb.velocity.magnitude > 0.2f;
+        groundedPlayer = (lastYposition == transform.position.y); // Checks if Y has changed since last frame
+        lastYposition = transform.position.y;
+        input = inputManager.GetPlayerMovement();     
         magnitude = inputManager.PlayerStartedSprinting() + 1f;
         isSprinting = isMoving && magnitude > 1f;
-
-        Move();
+    
         Animate();
     }
     /// <summary>
     /// If the player releases a movement key we don't want to go instantly to Idle so we wait a little time to check 
     /// if the player pressed a key in that time so it doesn't show idle anim.
     /// </summary>
-    private void CheckIfIsMoving()
+    private void Jump()
     {
-        if (!(input.x != 0 || input.y != 0)) StartCoroutine(WaitForBoolToChange());
-        else isMoving = true;
+
     }
-    private IEnumerator WaitForBoolToChange()
-    {
-        StopCoroutine(WaitForBoolToChange());
-        yield return new WaitForSeconds(0.1f);
-        isMoving = false;
-    }
-
-    private void Move()
-    {
-        if (groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-            isJumping = false;
-        }
-
-        Vector3 move = new(input.x, 0, input.y);
-        move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
-
-        move.y = playerVelocity.y += gravityValue * Time.deltaTime;
-
-        playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
-
-        if (controller.enabled == true)
-        {
-            controller.Move(playerSpeed * Time.deltaTime * move);
-        }
-    }
-    public void Jump()
-    {
-        if (groundedPlayer)
-        {
-            isJumping = true;
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3f * gravityValue);
-        }
-    }
-
     void Animate()
     {
         if (isMoving) currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
