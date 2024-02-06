@@ -51,6 +51,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "e98b26d9-ed85-4e8b-8271-c44b4b64fb1b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "DieTestButton",
                     "type": "Button",
                     "id": "6f0e0323-ed14-400a-8d11-2f9aa42de557",
@@ -168,6 +177,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "DieTestButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2f24cdf5-1691-4795-8b24-51e886c79053",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

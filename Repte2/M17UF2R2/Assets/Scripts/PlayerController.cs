@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     int isMovingnimationParamenterID;
     int isJumpingParamenterID;
     int isGroundedParamenterID;
+    int isCrouchingParameterID;
     
 
     // State Variables
@@ -66,7 +68,7 @@ public class PlayerController : MonoBehaviour
     private float aimDistance = 40f;
 
     private Rig pistolArmRig;
-
+    private bool isCrouching = false;
     private void Start()
     {
         inputManager = InputManager.Instance;
@@ -96,6 +98,7 @@ public class PlayerController : MonoBehaviour
         isMovingnimationParamenterID = Animator.StringToHash("isMoving");
         isJumpingParamenterID = Animator.StringToHash("isJumping");
         isGroundedParamenterID = Animator.StringToHash("isGrounded");
+        isCrouchingParameterID = Animator.StringToHash("isCrouching");
     }
 
     private void OnEnable()
@@ -103,12 +106,14 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerJumped += Jump;
         InputManager.PlayerAimed += StartAiming;
         InputManager.PlayerDied += Die;
+        InputManager.PlayerCrouched += Crouch;
     }
     private void OnDisable()
     {
         InputManager.PlayerJumped -= Jump;
         InputManager.PlayerAimed -= StartAiming;
         InputManager.PlayerDied -= Die;
+        InputManager.PlayerCrouched -= Crouch;
     }
     private void Update()
     {
@@ -160,6 +165,17 @@ public class PlayerController : MonoBehaviour
             controller.Move(playerSpeed * Time.deltaTime * move);
         }
     }
+    void Crouch()
+    {
+        isCrouching = !isCrouching;
+
+        float weight = isCrouching ? 1f : 0f;
+        animator.SetBool(isCrouchingParameterID, isCrouching);
+        animator.SetLayerWeight(0, 0);
+        StartCoroutine(SetWeightsTO(weight));
+
+
+    }
     public void Jump()
     {
         if (groundedPlayer)
@@ -208,6 +224,19 @@ public class PlayerController : MonoBehaviour
         }
 
         pistolArmRig.weight = goalValue;
+    }
+    private IEnumerator SetWeightsTO(float goalValue)
+    {
+        
+        float startValue = animator.GetLayerWeight(1);
+           
+        for (float i = 0f; i <= 1f; i += 5f * Time.deltaTime)
+        {
+            animator.SetLayerWeight(1, Mathf.Lerp(startValue, goalValue, i));
+            yield return null;
+        }
+
+       animator.SetLayerWeight(1, goalValue);
     }
     private void Die()
     {

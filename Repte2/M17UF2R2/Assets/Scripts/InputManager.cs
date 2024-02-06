@@ -15,6 +15,9 @@ public class InputManager : MonoBehaviour
     public delegate void OnPlayerAimed();
     public static event OnPlayerAimed PlayerAimed;
 
+    // Crouch delegates
+    public delegate void OnPlayerCrouched();
+    public static event OnPlayerAimed PlayerCrouched;
 
     // Death delegates
     public delegate void OnPlayerDied();
@@ -37,6 +40,7 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Jump.started += _ => PlayerJumped.Invoke();
         playerControls.Player.Aim.performed += _ => PlayerAimed.Invoke();
         playerControls.Player.DieTestButton.performed += _ => PlayerDied.Invoke();
+        playerControls.Player.Crouch.performed += _ => PlayerCrouched.Invoke(); 
         playerControls.Enable();
     }
     private void OnDisable()
@@ -44,6 +48,7 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Jump.started -= _ => PlayerJumped.Invoke();
         playerControls.Player.Aim.performed -= _ => PlayerAimed.Invoke();
         playerControls.Player.DieTestButton.performed -= _ => PlayerDied.Invoke();
+        playerControls.Player.Crouch.performed -= _ => PlayerCrouched.Invoke();
         playerControls.Disable();
     }
 

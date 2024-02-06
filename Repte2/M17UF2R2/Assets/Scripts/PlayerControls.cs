@@ -73,6 +73,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""e98b26d9-ed85-4e8b-8271-c44b4b64fb1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""DieTestButton"",
                     ""type"": ""Button"",
                     ""id"": ""6f0e0323-ed14-400a-8d11-2f9aa42de557"",
@@ -192,6 +201,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""DieTestButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f24cdf5-1691-4795-8b24-51e886c79053"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -205,6 +225,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
+        m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_DieTestButton = m_Player.FindAction("DieTestButton", throwIfNotFound: true);
     }
 
@@ -272,6 +293,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Aim;
+    private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_DieTestButton;
     public struct PlayerActions
     {
@@ -282,6 +304,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
+        public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @DieTestButton => m_Wrapper.m_Player_DieTestButton;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -307,6 +330,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @Crouch.started += instance.OnCrouch;
+            @Crouch.performed += instance.OnCrouch;
+            @Crouch.canceled += instance.OnCrouch;
             @DieTestButton.started += instance.OnDieTestButton;
             @DieTestButton.performed += instance.OnDieTestButton;
             @DieTestButton.canceled += instance.OnDieTestButton;
@@ -329,6 +355,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @Crouch.started -= instance.OnCrouch;
+            @Crouch.performed -= instance.OnCrouch;
+            @Crouch.canceled -= instance.OnCrouch;
             @DieTestButton.started -= instance.OnDieTestButton;
             @DieTestButton.performed -= instance.OnDieTestButton;
             @DieTestButton.canceled -= instance.OnDieTestButton;
@@ -356,6 +385,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnCrouch(InputAction.CallbackContext context);
         void OnDieTestButton(InputAction.CallbackContext context);
     }
 }
