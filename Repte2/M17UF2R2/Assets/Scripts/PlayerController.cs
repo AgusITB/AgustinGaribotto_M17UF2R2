@@ -10,23 +10,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float animationSmoothTime = 1f;
     Animator animator;
 
-    int moveXAnimationParamenterID;
-    int moveZAnimationParamenterID;
-    int magnitudeAnimationParamenterID;
-    int isSprintingAnimationParamenterID;
-    int isMovingnimationParamenterID;
-    int isJumpingParamenterID;
-    int isGroundedParamenterID;
-    int isCrouchingParameterID;
-    
+    int moveXAnimationParamenterID, moveZAnimationParamenterID, magnitudeAnimationParamenterID, isSprintingAnimationParamenterID, isMovingnimationParamenterID, isJumpingParamenterID, isGroundedParamenterID, isCrouchingParameterID;
+
 
     // State Variables
-    [SerializeField] bool isMoving = false;
-    [SerializeField] bool isSprinting = false;
-    [SerializeField] bool isJumping = false;
-    [SerializeField] private bool groundedPlayer;
-    [SerializeField] bool isAiming = false;
-
+    [Header("PlayerStates")]
+    [SerializeField] bool isMoving;
+    [SerializeField] bool isAiming;
+    [SerializeField] bool isSprinting;
+    [SerializeField] bool isJumping;
+    [SerializeField] bool groundedPlayer;
+    [SerializeField] bool isCrouching;
+            
     Vector2 currentAnimationBlendVector;
     Vector2 animationVelocity;
 
@@ -38,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
 
     //Player variables
+    [Header("PlayerVariables")]
     [SerializeField] private float playerSpeed;
     [SerializeField] private float magnitude = 1f;
     [SerializeField] private float walkSpeed = 3.0f;
@@ -68,7 +64,7 @@ public class PlayerController : MonoBehaviour
     private float aimDistance = 40f;
 
     private Rig pistolArmRig;
-    private bool isCrouching = false;
+   
     private void Start()
     {
         inputManager = InputManager.Instance;
@@ -158,7 +154,9 @@ public class PlayerController : MonoBehaviour
 
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
 
-        playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        if (!isCrouching) playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        else if (isCrouching) playerSpeed = isSprinting ? 1.5f : 1;
+
 
         if (controller.enabled == true)
         {
@@ -168,7 +166,7 @@ public class PlayerController : MonoBehaviour
     void Crouch()
     {
         isCrouching = !isCrouching;
-
+        
         float weight = isCrouching ? 1f : 0f;
         animator.SetBool(isCrouchingParameterID, isCrouching);
         animator.SetLayerWeight(0, 0);
