@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c449ccf856f77884ba6949581eab11ae
+guid: 9951e2d39c459e8498900538e95239e8
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,11 +33,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: CrouchStrafeRight
+      name: CrouchForward
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 33
+      lastFrame: 37
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
