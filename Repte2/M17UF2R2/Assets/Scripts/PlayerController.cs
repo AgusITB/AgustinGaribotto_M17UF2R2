@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float animationSmoothTime = 1f;
     Animator animator;
 
-    int moveXAnimationParamenterID, moveZAnimationParamenterID, magnitudeAnimationParamenterID, isSprintingAnimationParamenterID, isMovingnimationParamenterID, isJumpingParamenterID, isGroundedParamenterID, isCrouchingParameterID;
+    int moveXAnimationParameterID, moveZAnimationParameterID, magnitudeAnimationParameterID, 
+        isSprintingAnimationParameterID, isMovingnimationParameterID, isJumpingParameterID,
+        isGroundedParameterID, isCrouchingParameterID, isFallingParameterID;
 
 
     // State Variables
@@ -21,7 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool isJumping;
     [SerializeField] bool groundedPlayer;
     [SerializeField] bool isCrouching;
-            
+    [SerializeField] bool isFalling;
     Vector2 currentAnimationBlendVector;
     Vector2 animationVelocity;
 
@@ -64,7 +67,8 @@ public class PlayerController : MonoBehaviour
     private float aimDistance = 40f;
 
     private Rig pistolArmRig;
-   
+
+
     private void Start()
     {
         inputManager = InputManager.Instance;
@@ -87,14 +91,15 @@ public class PlayerController : MonoBehaviour
     }
     private void SetAnimatorIDs()
     {
-        moveXAnimationParamenterID = Animator.StringToHash("Velocity X");
-        moveZAnimationParamenterID = Animator.StringToHash("Velocity Z");
-        magnitudeAnimationParamenterID = Animator.StringToHash("Magnitude");
-        isSprintingAnimationParamenterID = Animator.StringToHash("isSprinting");
-        isMovingnimationParamenterID = Animator.StringToHash("isMoving");
-        isJumpingParamenterID = Animator.StringToHash("isJumping");
-        isGroundedParamenterID = Animator.StringToHash("isGrounded");
+        moveXAnimationParameterID = Animator.StringToHash("Velocity X");
+        moveZAnimationParameterID = Animator.StringToHash("Velocity Z");
+        magnitudeAnimationParameterID = Animator.StringToHash("Magnitude");
+        isSprintingAnimationParameterID = Animator.StringToHash("isSprinting");
+        isMovingnimationParameterID = Animator.StringToHash("isMoving");
+        isJumpingParameterID = Animator.StringToHash("isJumping");
+        isGroundedParameterID = Animator.StringToHash("isGrounded");
         isCrouchingParameterID = Animator.StringToHash("isCrouching");
+        isFallingParameterID = Animator.StringToHash("isFalling");
     }
 
     private void OnEnable()
@@ -147,7 +152,11 @@ public class PlayerController : MonoBehaviour
         {
             playerVelocity.y = 0f;
             isJumping = false;
+            isFalling = false;
         }
+        var currentVelocity = controller.velocity.y;
+        if (currentVelocity < 0f && !groundedPlayer) isFalling = true;
+
 
         Vector3 move = new(input.x, 0, input.y);
         move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
@@ -156,7 +165,6 @@ public class PlayerController : MonoBehaviour
 
         if (!isCrouching) playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
         else if (isCrouching) playerSpeed = isSprinting ? 1.5f : 1;
-
 
         if (controller.enabled == true)
         {
@@ -176,9 +184,11 @@ public class PlayerController : MonoBehaviour
     }
     public void Jump()
     {
+       
         if (groundedPlayer)
         {
             isJumping = true;
+
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3f * gravityValue);
         }
     }
@@ -188,22 +198,27 @@ public class PlayerController : MonoBehaviour
         if (isMoving) currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
         else currentAnimationBlendVector = input;
 
-        //Apply inputs in animator 
-        animator.SetFloat(moveXAnimationParamenterID, currentAnimationBlendVector.x);
-        animator.SetFloat(moveZAnimationParamenterID, currentAnimationBlendVector.y);
-        animator.SetBool(isMovingnimationParamenterID, isMoving);
-        animator.SetBool(isGroundedParamenterID, groundedPlayer);
-        animator.SetBool(isJumpingParamenterID, isJumping);
-        animator.SetFloat(magnitudeAnimationParamenterID, magnitude);
-        animator.SetBool(isSprintingAnimationParamenterID, isSprinting);
+        ApplySettingsToAnimator();
 
-
-        if (!isSprinting) animator.SetFloat(magnitudeAnimationParamenterID, currentAnimationBlendVector.magnitude);
+        if (!isSprinting) animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
 
         //Rotate towards camera direction
         Quaternion rotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
 
+    }
+
+    void ApplySettingsToAnimator()
+    {
+          //Apply inputs in animator 
+        animator.SetFloat(moveXAnimationParameterID, currentAnimationBlendVector.x);
+        animator.SetFloat(moveZAnimationParameterID, currentAnimationBlendVector.y);
+        animator.SetBool(isMovingnimationParameterID, isMoving);
+        animator.SetBool(isGroundedParameterID, groundedPlayer);
+        animator.SetBool(isJumpingParameterID, isJumping);
+        animator.SetFloat(magnitudeAnimationParameterID, magnitude);
+        animator.SetBool(isSprintingAnimationParameterID, isSprinting);
+        animator.SetBool(isFallingParameterID, isFalling);
     }
     private void StartAiming()
     {
