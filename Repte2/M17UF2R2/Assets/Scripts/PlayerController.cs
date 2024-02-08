@@ -154,9 +154,8 @@ public class PlayerController : MonoBehaviour
             isJumping = false;
             isFalling = false;
         }
-        var currentVelocity = controller.velocity.y;
-        if (currentVelocity < 0f && !groundedPlayer) isFalling = true;
 
+        if (controller.velocity.y < 0f && !groundedPlayer) isFalling = true;
 
         Vector3 move = new(input.x, 0, input.y);
         move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
@@ -166,10 +165,7 @@ public class PlayerController : MonoBehaviour
         if (!isCrouching) playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
         else if (isCrouching) playerSpeed = isSprinting ? 1.5f : 1;
 
-        if (controller.enabled == true)
-        {
-            controller.Move(playerSpeed * Time.deltaTime * move);
-        }
+        if (controller.enabled == true) controller.Move(playerSpeed * Time.deltaTime * move);
     }
     void Crouch()
     {
@@ -188,7 +184,6 @@ public class PlayerController : MonoBehaviour
         if (groundedPlayer)
         {
             isJumping = true;
-
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3f * gravityValue);
         }
     }
@@ -210,7 +205,7 @@ public class PlayerController : MonoBehaviour
 
     void ApplySettingsToAnimator()
     {
-          //Apply inputs in animator 
+        //Apply inputs in animator 
         animator.SetFloat(moveXAnimationParameterID, currentAnimationBlendVector.x);
         animator.SetFloat(moveZAnimationParameterID, currentAnimationBlendVector.y);
         animator.SetBool(isMovingnimationParameterID, isMoving);
