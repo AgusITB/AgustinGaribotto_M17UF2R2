@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Cursor.visible = false; 
+        Cursor.visible = false;
+        gun.SetActive(false);
     }
 
     private void OnEnable()
