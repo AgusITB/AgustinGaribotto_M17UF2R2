@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
@@ -23,6 +24,9 @@ public class InputManager : MonoBehaviour
     public delegate void OnPlayerDied();
     public static event OnPlayerAimed PlayerDied;
 
+
+    // Shoot delegates
+    public static Action Shoot;
     public static InputManager Instance
     {
         get { return _instance; }
@@ -40,7 +44,8 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Jump.started += _ => PlayerJumped.Invoke();
         playerControls.Player.Aim.performed += _ => PlayerAimed.Invoke();
         playerControls.Player.DieTestButton.performed += _ => PlayerDied.Invoke();
-        playerControls.Player.Crouch.performed += _ => PlayerCrouched.Invoke(); 
+        playerControls.Player.Crouch.performed += _ => PlayerCrouched.Invoke();
+        playerControls.Player.Shoot.performed += _ => Shoot.Invoke();
         playerControls.Enable();
     }
     private void OnDisable()

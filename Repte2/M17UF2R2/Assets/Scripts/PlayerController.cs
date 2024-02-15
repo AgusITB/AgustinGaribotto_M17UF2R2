@@ -19,7 +19,10 @@ public class PlayerController : MonoBehaviour
     // State Variables
     [Header("PlayerStates")]
     [SerializeField] bool isMoving;
-    [SerializeField] bool isAiming;
+    [SerializeField] private static bool isAiming;
+
+    public static bool IsAiming { get { return isAiming; } }
+
     [SerializeField] bool isSprinting;
     [SerializeField] bool isJumping;
     [SerializeField] bool groundedPlayer;
@@ -252,9 +255,3 @@ public class PlayerController : MonoBehaviour
         PlayerDied.Invoke();
     }
 }
-
-
-
-
-
-
