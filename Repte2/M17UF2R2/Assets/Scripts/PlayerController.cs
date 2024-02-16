@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool groundedPlayer;
     [SerializeField] bool isCrouching;
     [SerializeField] bool isFalling;
-    [SerializeField] bool isLanding = false;
+    //[SerializeField] bool isLanding = false;
 
     Vector2 currentAnimationBlendVector;
     Vector2 animationVelocity;
@@ -184,7 +184,7 @@ public class PlayerController : MonoBehaviour
     }
     public void Jump()
     {       
-        if (groundedPlayer && controller.enabled == true && !isLanding && !isCrouching)
+        if (groundedPlayer && controller.enabled == true && !isCrouching)
         {
             isJumping = true;
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3f * gravityValue);
