@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
@@ -11,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float animationSmoothTime = 1f;
     Animator animator;
 
-    int moveXAnimationParameterID, moveZAnimationParameterID, magnitudeAnimationParameterID, 
+    int moveXAnimationParameterID, moveZAnimationParameterID, magnitudeAnimationParameterID,
         isSprintingAnimationParameterID, isMovingnimationParameterID, isJumpingParameterID,
         isGroundedParameterID, isCrouchingParameterID, isFallingParameterID;
 
@@ -173,17 +174,28 @@ public class PlayerController : MonoBehaviour
     }
     void Crouch()
     {
+        if (isCrouching && Physics.Raycast(this.transform.position, transform.TransformDirection(Vector3.up), Mathf.Infinity, LayerMask.GetMask("Environment"))) return;
+  
         isCrouching = !isCrouching;
-        
+
         float weight = isCrouching ? 1f : 0f;
         animator.SetBool(isCrouchingParameterID, isCrouching);
         animator.SetLayerWeight(0, 0);
         StartCoroutine(SetWeightsTO(weight));
 
-
+        if (isCrouching)
+        {
+            controller.height = 0.8f;
+            controller.center = new(0f, 0.5f, 0f);
+        }
+        else
+        {
+            controller.height = 1.61f;
+            controller.center = new(0f, 0.89f, 0f);
+        }
     }
     public void Jump()
-    {       
+    {
         if (groundedPlayer && controller.enabled == true && !isCrouching)
         {
             isJumping = true;
@@ -238,16 +250,16 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator SetWeightsTO(float goalValue)
     {
-        
+
         float startValue = animator.GetLayerWeight(1);
-           
+
         for (float i = 0f; i <= 1f; i += 5f * Time.deltaTime)
         {
             animator.SetLayerWeight(1, Mathf.Lerp(startValue, goalValue, i));
             yield return null;
         }
 
-       animator.SetLayerWeight(1, goalValue);
+        animator.SetLayerWeight(1, goalValue);
     }
     private void Die()
     {

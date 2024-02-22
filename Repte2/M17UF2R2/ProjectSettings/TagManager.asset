@@ -12,10 +12,10 @@ TagManager:
   - Water
   - UI
   - Environment
+  - Player
+  - Enemies
   - 
-  - 
-  - 
-  - 
+  - Minimap
   - 
   - 
   - 

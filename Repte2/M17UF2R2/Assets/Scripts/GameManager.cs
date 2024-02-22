@@ -4,13 +4,16 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject gun;
+    [SerializeField]
+    private GameObject crosshair;
     private bool gunIsActive = false;
-
+    
 
     private void Awake()
     {
         Cursor.visible = false;
         gun.SetActive(false);
+        crosshair.SetActive(false);
     }
 
     private void OnEnable()
@@ -36,6 +39,7 @@ public class GameManager : MonoBehaviour
     void ActivateWeapon()
     {
         gunIsActive = !gunIsActive;
-        gun.SetActive(gunIsActive);      
+        gun.SetActive(gunIsActive);
+        crosshair.SetActive(gunIsActive);
     }
 }

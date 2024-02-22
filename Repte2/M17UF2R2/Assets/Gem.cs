@@ -16,7 +16,7 @@ public class Gem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.DORotate(player.transform.position, 3f).Loops();
+        
         //transform.DORotate(new Vector3(player.transform.position.x, player.transform.position.y ,player.transform.position.z), 1f);
     }
 }
