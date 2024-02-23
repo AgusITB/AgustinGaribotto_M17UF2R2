@@ -21,14 +21,13 @@ public class PlayerController : MonoBehaviour
     [Header("PlayerStates")]
     [SerializeField] bool isMoving;
     [SerializeField] private static bool isAiming;
-
     public static bool IsAiming { get { return isAiming; } }
+    [SerializeField] bool IsSprinting { get; set; }
+    [SerializeField] bool IsJumping { get; set; }
+    [SerializeField] bool GroundedPlayer { get; set; }
+    [SerializeField] bool IsCrouching { get; set; }
+    [SerializeField] bool IsFalling { get; set; }
 
-    [SerializeField] bool isSprinting;
-    [SerializeField] bool isJumping;
-    [SerializeField] bool groundedPlayer;
-    [SerializeField] bool isCrouching;
-    [SerializeField] bool isFalling;
     //[SerializeField] bool isLanding = false;
 
     Vector2 currentAnimationBlendVector;
@@ -87,6 +86,7 @@ public class PlayerController : MonoBehaviour
         SetComponents();
         SetAnimatorIDs();
     }
+
     private void SetComponents()
     {
         pistolArmRig = GetComponentInChildren<Rig>();
@@ -128,9 +128,9 @@ public class PlayerController : MonoBehaviour
         aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
         input = inputManager.GetPlayerMovement();
         CheckIfIsMoving();
-        groundedPlayer = controller.isGrounded;
+        GroundedPlayer = controller.isGrounded;
         magnitude = inputManager.PlayerStartedSprinting() + 1f;
-        isSprinting = isMoving && magnitude > 1f;
+        IsSprinting = isMoving && magnitude > 1f;
 
         Move();
         Animate();
@@ -153,37 +153,37 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if (groundedPlayer && playerVelocity.y < 0)
+        if (GroundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
-            isJumping = false;
-            isFalling = false;
+            IsJumping = false;
+            IsFalling = false;
         }
 
-        if (controller.velocity.y < 0f && !groundedPlayer) isFalling = true;
+        if (controller.velocity.y < 0f && !GroundedPlayer) IsFalling = true;
 
         Vector3 move = new(input.x, 0, input.y);
         move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
 
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
 
-        if (!isCrouching) playerSpeed = isSprinting ? sprintSpeed : walkSpeed;
-        else if (isCrouching) playerSpeed = isSprinting ? 1.5f : 1;
+        if (!IsCrouching) playerSpeed = IsSprinting ? sprintSpeed : walkSpeed;
+        else if (IsCrouching) playerSpeed = IsSprinting ? 1.5f : 1;
 
         if (controller.enabled == true) controller.Move(playerSpeed * Time.deltaTime * move);
     }
-    void Crouch()
+    private void Crouch()
     {
-        if (isCrouching && Physics.Raycast(this.transform.position, transform.TransformDirection(Vector3.up), Mathf.Infinity, LayerMask.GetMask("Environment"))) return;
-  
-        isCrouching = !isCrouching;
+        if (IsCrouching && Physics.Raycast(this.transform.position, transform.TransformDirection(Vector3.up), Mathf.Infinity, LayerMask.GetMask("Environment"))) return;
 
-        float weight = isCrouching ? 1f : 0f;
-        animator.SetBool(isCrouchingParameterID, isCrouching);
+        IsCrouching = !IsCrouching;
+
+        float weight = IsCrouching ? 1f : 0f;
+        animator.SetBool(isCrouchingParameterID, IsCrouching);
         animator.SetLayerWeight(0, 0);
         StartCoroutine(SetWeightsTO(weight));
 
-        if (isCrouching)
+        if (IsCrouching)
         {
             controller.height = 0.8f;
             controller.center = new(0f, 0.5f, 0f);
@@ -196,9 +196,9 @@ public class PlayerController : MonoBehaviour
     }
     public void Jump()
     {
-        if (groundedPlayer && controller.enabled == true && !isCrouching)
+        if (GroundedPlayer && controller.enabled == true && !IsCrouching)
         {
-            isJumping = true;
+            IsJumping = true;
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3f * gravityValue);
         }
     }
@@ -210,7 +210,7 @@ public class PlayerController : MonoBehaviour
 
         ApplySettingsToAnimator();
 
-        if (!isSprinting) animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
+        if (!IsSprinting) animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
 
         //Rotate towards camera direction
         Quaternion rotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
@@ -224,11 +224,11 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat(moveXAnimationParameterID, currentAnimationBlendVector.x);
         animator.SetFloat(moveZAnimationParameterID, currentAnimationBlendVector.y);
         animator.SetBool(isMovingnimationParameterID, isMoving);
-        animator.SetBool(isGroundedParameterID, groundedPlayer);
-        animator.SetBool(isJumpingParameterID, isJumping);
+        animator.SetBool(isGroundedParameterID, GroundedPlayer);
+        animator.SetBool(isJumpingParameterID, IsJumping);
         animator.SetFloat(magnitudeAnimationParameterID, magnitude);
-        animator.SetBool(isSprintingAnimationParameterID, isSprinting);
-        animator.SetBool(isFallingParameterID, isFalling);
+        animator.SetBool(isSprintingAnimationParameterID, IsSprinting);
+        animator.SetBool(isFallingParameterID, IsFalling);
     }
     private void StartAiming()
     {
