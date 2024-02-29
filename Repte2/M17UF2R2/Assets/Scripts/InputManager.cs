@@ -9,24 +9,23 @@ public class InputManager : MonoBehaviour
 
 
     // Jump delegates
-    public delegate void OnPlayerJumped();
-    public static event OnPlayerJumped PlayerJumped;
+    public static Action PlayerJumped;
 
     // Aim delegates
-    public delegate void OnPlayerAimed();
-    public static event OnPlayerAimed PlayerAimed;
+    public static Action PlayerAimed;
 
     // Crouch delegates
-    public delegate void OnPlayerCrouched();
-    public static event OnPlayerAimed PlayerCrouched;
+    public static Action PlayerCrouched;
 
     // Death delegates
-    public delegate void OnPlayerDied();
-    public static event OnPlayerAimed PlayerDied;
-
+    public static Action PlayerDied;
 
     // Shoot delegates
     public static Action Shoot;
+
+    // Inventory delegate
+    public static Action OpenInventory;
+
     public static InputManager Instance
     {
         get { return _instance; }
@@ -46,6 +45,7 @@ public class InputManager : MonoBehaviour
         playerControls.Player.DieTestButton.performed += _ => PlayerDied.Invoke();
         playerControls.Player.Crouch.performed += _ => PlayerCrouched.Invoke();
         playerControls.Player.Shoot.performed += _ => Shoot.Invoke();
+        playerControls.Player.OpenInventory.performed += _ => OpenInventory.Invoke();
         playerControls.Enable();
     }
     private void OnDisable()
@@ -54,6 +54,8 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Aim.performed -= _ => PlayerAimed.Invoke();
         playerControls.Player.DieTestButton.performed -= _ => PlayerDied.Invoke();
         playerControls.Player.Crouch.performed -= _ => PlayerCrouched.Invoke();
+        playerControls.Player.Shoot.performed -= _ => Shoot.Invoke();
+        playerControls.Player.OpenInventory.performed -= _ => OpenInventory.Invoke();
         playerControls.Disable();
     }
 

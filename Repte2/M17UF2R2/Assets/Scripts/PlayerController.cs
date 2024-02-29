@@ -1,10 +1,9 @@
+using System;
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.InputSystem.EnhancedTouch;
-using UnityEngine.InputSystem.XR;
+using UnityEngine.InputSystem;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,7 +15,6 @@ public class PlayerController : MonoBehaviour
         isSprintingAnimationParameterID, isMovingnimationParameterID, isJumpingParameterID,
         isGroundedParameterID, isCrouchingParameterID, isFallingParameterID;
 
-
     // State Variables
     [Header("PlayerStates")]
     [SerializeField] bool isMoving;
@@ -27,6 +25,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool GroundedPlayer { get; set; }
     [SerializeField] bool IsCrouching { get; set; }
     [SerializeField] bool IsFalling { get; set; }
+    [SerializeField] bool InventoryIsOpened { get; set; }
 
     //[SerializeField] bool isLanding = false;
 
@@ -124,26 +123,25 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         // Check current inputs 
-
         aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
+        
         input = inputManager.GetPlayerMovement();
-        CheckIfIsMoving();
+       
+        if (!(input.x != 0 || input.y != 0)) 
+            StartCoroutine(WaitForBoolToChange());
+        else 
+            isMoving = true;
+
         GroundedPlayer = controller.isGrounded;
+        
         magnitude = inputManager.PlayerStartedSprinting() + 1f;
+        
         IsSprinting = isMoving && magnitude > 1f;
 
         Move();
         Animate();
     }
-    /// <summary>
-    /// If the player releases a movement key we don't want to go instantly to Idle so we wait a little time to check 
-    /// if the player pressed a key in that time so it doesn't show idle anim.
-    /// </summary>
-    private void CheckIfIsMoving()
-    {
-        if (!(input.x != 0 || input.y != 0)) StartCoroutine(WaitForBoolToChange());
-        else isMoving = true;
-    }
+
     private IEnumerator WaitForBoolToChange()
     {
         StopCoroutine(WaitForBoolToChange());
@@ -160,17 +158,21 @@ public class PlayerController : MonoBehaviour
             IsFalling = false;
         }
 
-        if (controller.velocity.y < 0f && !GroundedPlayer) IsFalling = true;
+        if (controller.velocity.y < 0f && !GroundedPlayer) 
+            IsFalling = true;
 
         Vector3 move = new(input.x, 0, input.y);
         move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
 
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
 
-        if (!IsCrouching) playerSpeed = IsSprinting ? sprintSpeed : walkSpeed;
-        else if (IsCrouching) playerSpeed = IsSprinting ? 1.5f : 1;
+        if (!IsCrouching) 
+            playerSpeed = IsSprinting ? sprintSpeed : walkSpeed;
+        else if (IsCrouching) 
+            playerSpeed = IsSprinting ? 1.5f : 1;
 
-        if (controller.enabled == true) controller.Move(playerSpeed * Time.deltaTime * move);
+        if (controller.enabled == true) 
+            controller.Move(playerSpeed * Time.deltaTime * move);
     }
     private void Crouch()
     {
@@ -205,12 +207,15 @@ public class PlayerController : MonoBehaviour
 
     void Animate()
     {
-        if (isMoving) currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
-        else currentAnimationBlendVector = input;
+        if (isMoving)
+            currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
+        else 
+            currentAnimationBlendVector = input;
 
         ApplySettingsToAnimator();
 
-        if (!IsSprinting) animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
+        if (!IsSprinting) 
+            animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
 
         //Rotate towards camera direction
         Quaternion rotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
@@ -245,7 +250,6 @@ public class PlayerController : MonoBehaviour
             pistolArmRig.weight = Mathf.Lerp(startValue, goalValue, i);
             yield return null;
         }
-
         pistolArmRig.weight = goalValue;
     }
     private IEnumerator SetWeightsTO(float goalValue)
