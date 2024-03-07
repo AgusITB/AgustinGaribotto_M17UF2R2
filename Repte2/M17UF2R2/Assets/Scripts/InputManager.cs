@@ -26,6 +26,8 @@ public class InputManager : MonoBehaviour
     // Inventory delegate
     public static Action OpenInventory;
 
+    public static Action PickupItem;
+
     public static InputManager Instance
     {
         get { return _instance; }
@@ -46,6 +48,7 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Crouch.performed += _ => PlayerCrouched.Invoke();
         playerControls.Player.Shoot.performed += _ => Shoot.Invoke();
         playerControls.Player.OpenInventory.performed += _ => OpenInventory.Invoke();
+        playerControls.Player.PickUpItem.performed += _ => PickupItem.Invoke();
         playerControls.Enable();
     }
     private void OnDisable()
@@ -56,6 +59,7 @@ public class InputManager : MonoBehaviour
         playerControls.Player.Crouch.performed -= _ => PlayerCrouched.Invoke();
         playerControls.Player.Shoot.performed -= _ => Shoot.Invoke();
         playerControls.Player.OpenInventory.performed -= _ => OpenInventory.Invoke();
+        playerControls.Player.PickUpItem.performed -= _ => PickupItem.Invoke();
         playerControls.Disable();
     }
 

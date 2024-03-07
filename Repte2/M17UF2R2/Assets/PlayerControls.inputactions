@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PickUpItem",
+                    "type": "Button",
+                    "id": "b603b3b2-052b-4233-8735-6b86322caf2a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -228,6 +237,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "OpenInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c8a7f143-1c4f-4568-8b3d-394467f70fdd",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PickUpItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

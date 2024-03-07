@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject crosshair;
     private bool gunIsActive = false;
-    
 
     private void Awake()
     {

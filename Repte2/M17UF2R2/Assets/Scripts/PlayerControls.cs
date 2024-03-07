@@ -107,6 +107,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PickUpItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""b603b3b2-052b-4233-8735-6b86322caf2a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -252,6 +261,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""OpenInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c8a7f143-1c4f-4568-8b3d-394467f70fdd"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PickUpItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -269,6 +289,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_DieTestButton = m_Player.FindAction("DieTestButton", throwIfNotFound: true);
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_OpenInventory = m_Player.FindAction("OpenInventory", throwIfNotFound: true);
+        m_Player_PickUpItem = m_Player.FindAction("PickUpItem", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -339,6 +360,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_DieTestButton;
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_OpenInventory;
+    private readonly InputAction m_Player_PickUpItem;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -352,6 +374,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @DieTestButton => m_Wrapper.m_Player_DieTestButton;
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @OpenInventory => m_Wrapper.m_Player_OpenInventory;
+        public InputAction @PickUpItem => m_Wrapper.m_Player_PickUpItem;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -388,6 +411,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenInventory.started += instance.OnOpenInventory;
             @OpenInventory.performed += instance.OnOpenInventory;
             @OpenInventory.canceled += instance.OnOpenInventory;
+            @PickUpItem.started += instance.OnPickUpItem;
+            @PickUpItem.performed += instance.OnPickUpItem;
+            @PickUpItem.canceled += instance.OnPickUpItem;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -419,6 +445,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenInventory.started -= instance.OnOpenInventory;
             @OpenInventory.performed -= instance.OnOpenInventory;
             @OpenInventory.canceled -= instance.OnOpenInventory;
+            @PickUpItem.started -= instance.OnPickUpItem;
+            @PickUpItem.performed -= instance.OnPickUpItem;
+            @PickUpItem.canceled -= instance.OnPickUpItem;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -447,5 +476,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnDieTestButton(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnOpenInventory(InputAction.CallbackContext context);
+        void OnPickUpItem(InputAction.CallbackContext context);
     }
 }

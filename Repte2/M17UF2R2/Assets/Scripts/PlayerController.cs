@@ -71,6 +71,11 @@ public class PlayerController : MonoBehaviour
 
     private Rig pistolArmRig;
 
+    [SerializeField] private GameObject pouch;
+
+    [SerializeField] private HUD Hud;
+    
+    [SerializeField] private Item pickableItem;
 
     private void Start()
     {
@@ -112,6 +117,8 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerAimed += StartAiming;
         InputManager.PlayerDied += Die;
         InputManager.PlayerCrouched += Crouch;
+        InputManager.PickupItem += PickUpItem;
+        
     }
     private void OnDisable()
     {
@@ -119,7 +126,39 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerAimed -= StartAiming;
         InputManager.PlayerDied -= Die;
         InputManager.PlayerCrouched -= Crouch;
+        InputManager.PickupItem -= PickUpItem;
     }
+
+    private void PickUpItem()
+    {
+        if (pickableItem != null)
+        {
+            pickableItem.transform.parent = pouch.transform;
+            pickableItem.transform.position = pouch.transform.position;
+   
+            pickableItem.Collect();
+            Hud.CloseItemPanel();
+            pickableItem = null;
+        }
+
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out ICollectable item))
+        {
+            Hud.OpenItemPanel((Item)item);
+            pickableItem = (Item)item;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {          
+        if (other.TryGetComponent(out ICollectable item))
+        {      
+            Hud.CloseItemPanel();
+            pickableItem = null;
+        }
+    }
+
     private void Update()
     {
         // Check current inputs 
