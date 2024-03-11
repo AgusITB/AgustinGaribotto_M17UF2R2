@@ -5,7 +5,7 @@ public class BulletController : MonoBehaviour
     [SerializeField]
     private GameObject bulletDecal;
 
-    private float speed = 50f;
+    private float speed = 10f;
     private float timeToDestroy = 3f;
 
     public Vector3 Target { get; set; }
@@ -18,7 +18,10 @@ public class BulletController : MonoBehaviour
         rb.useGravity = false;
         Destroy(gameObject, timeToDestroy);
     }
-    private void Update()
+
+
+
+    private void FixedUpdate()
     {
         rb.AddForce(Target * speed, ForceMode.Impulse);
         //transform.position = Vector3.MoveTowards(transform.position, Target, speed,);
