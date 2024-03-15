@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private Item pickableItem;
 
+
     private void Start()
     {
         inputManager = InputManager.Instance;
@@ -133,9 +134,8 @@ public class PlayerController : MonoBehaviour
     {
         if (pickableItem != null)
         {
-            pickableItem.transform.parent = pouch.transform;
+            pickableItem.transform.SetParent(pouch.transform,false);
             pickableItem.transform.position = pouch.transform.position;
-   
             pickableItem.Collect();
             Hud.CloseItemPanel();
             pickableItem = null;
