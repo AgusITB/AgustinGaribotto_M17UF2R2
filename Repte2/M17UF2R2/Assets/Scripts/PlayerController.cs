@@ -17,15 +17,15 @@ public class PlayerController : MonoBehaviour
 
     // State Variables
     [Header("PlayerStates")]
-    [SerializeField] bool isMoving;
-    [SerializeField] private static bool isAiming;
+    bool isMoving;
+    private static bool isAiming;
     public static bool IsAiming { get { return isAiming; } }
-    [SerializeField] bool IsSprinting { get; set; }
-    [SerializeField] bool IsJumping { get; set; }
-    [SerializeField] bool GroundedPlayer { get; set; }
-    [SerializeField] bool IsCrouching { get; set; }
-    [SerializeField] bool IsFalling { get; set; }
-    [SerializeField] bool InventoryIsOpened { get; set; }
+    bool IsSprinting { get; set; }
+    bool IsJumping { get; set; }
+    bool GroundedPlayer { get; set; }
+    bool IsCrouching { get; set; }
+    bool IsFalling { get; set; }
+    bool InventoryIsOpened { get; set; }
 
     //[SerializeField] bool isLanding = false;
 
@@ -74,12 +74,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject pouch;
 
     [SerializeField] private HUD Hud;
-    
+
     [SerializeField] private Item pickableItem;
+
+    private PlayerInvetory inventory;
 
     private void Start()
     {
         inputManager = InputManager.Instance;
+
+
+
     }
     private void Awake()
     {
@@ -97,7 +102,9 @@ public class PlayerController : MonoBehaviour
         controller = gameObject.GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         cameraTransform = Camera.main.transform;
+        inventory = GetComponent<PlayerInvetory>();
     }
+
     private void SetAnimatorIDs()
     {
         moveXAnimationParameterID = Animator.StringToHash("Velocity X");
@@ -118,7 +125,8 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerDied += Die;
         InputManager.PlayerCrouched += Crouch;
         InputManager.PickupItem += PickUpItem;
-        
+        GameDataManager.dataLoaded += ApplyData;
+
     }
     private void OnDisable()
     {
@@ -127,20 +135,27 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerDied -= Die;
         InputManager.PlayerCrouched -= Crouch;
         InputManager.PickupItem -= PickUpItem;
+        GameDataManager.dataLoaded -= ApplyData;
     }
 
+    private void ApplyData(PlayerData data)
+    {
+        this.transform.position = data.playerPosition;
+    }
     private void PickUpItem()
     {
+
+
         if (pickableItem != null)
         {
             pickableItem.transform.parent = pouch.transform;
             pickableItem.transform.position = pouch.transform.position;
-   
             pickableItem.Collect();
             Hud.CloseItemPanel();
+            inventory.AddToInventory(pickableItem);
+
             pickableItem = null;
         }
-
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -151,9 +166,9 @@ public class PlayerController : MonoBehaviour
         }
     }
     private void OnTriggerExit(Collider other)
-    {          
-        if (other.TryGetComponent(out ICollectable item))
-        {      
+    {
+        if (other.TryGetComponent(out ICollectable _))
+        {
             Hud.CloseItemPanel();
             pickableItem = null;
         }
@@ -163,18 +178,18 @@ public class PlayerController : MonoBehaviour
     {
         // Check current inputs 
         aimTarget.position = cameraTransform.position + cameraTransform.forward * aimDistance;
-        
+
         input = inputManager.GetPlayerMovement();
-       
-        if (!(input.x != 0 || input.y != 0)) 
+
+        if (!(input.x != 0 || input.y != 0))
             StartCoroutine(WaitForBoolToChange());
-        else 
+        else
             isMoving = true;
 
         GroundedPlayer = controller.isGrounded;
-        
+
         magnitude = inputManager.PlayerStartedSprinting() + 1f;
-        
+
         IsSprinting = isMoving && magnitude > 1f;
 
         Move();
@@ -197,7 +212,7 @@ public class PlayerController : MonoBehaviour
             IsFalling = false;
         }
 
-        if (controller.velocity.y < 0f && !GroundedPlayer) 
+        if (controller.velocity.y < 0f && !GroundedPlayer)
             IsFalling = true;
 
         Vector3 move = new(input.x, 0, input.y);
@@ -205,12 +220,12 @@ public class PlayerController : MonoBehaviour
 
         move.y = playerVelocity.y += gravityValue * Time.deltaTime;
 
-        if (!IsCrouching) 
+        if (!IsCrouching)
             playerSpeed = IsSprinting ? sprintSpeed : walkSpeed;
-        else if (IsCrouching) 
+        else if (IsCrouching)
             playerSpeed = IsSprinting ? 1.5f : 1;
 
-        if (controller.enabled == true) 
+        if (controller.enabled == true)
             controller.Move(playerSpeed * Time.deltaTime * move);
     }
     private void Crouch()
@@ -248,12 +263,12 @@ public class PlayerController : MonoBehaviour
     {
         if (isMoving)
             currentAnimationBlendVector = Vector2.SmoothDamp(currentAnimationBlendVector, input, ref animationVelocity, animationSmoothTime);
-        else 
+        else
             currentAnimationBlendVector = input;
 
         ApplySettingsToAnimator();
 
-        if (!IsSprinting) 
+        if (!IsSprinting)
             animator.SetFloat(magnitudeAnimationParameterID, currentAnimationBlendVector.magnitude);
 
         //Rotate towards camera direction
