@@ -41,7 +41,8 @@ public class GameDataManager : MonoBehaviour
             string content = File.ReadAllText(saveFile);
             playerSettings = JsonUtility.FromJson<PlayerData>(content);
             dataLoaded.Invoke(playerSettings);
-            Debug.Log("Player position saved: " + playerSettings.playerPosition);
+            Debug.Log("Player position loaded: " + playerSettings.playerPosition);
+            player.transform.position = playerSettings.playerPosition;
         }
         else
         {
