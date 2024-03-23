@@ -12,50 +12,69 @@ public class GameDataManager : MonoBehaviour
 
     public PlayerData playerSettings = new();
 
+    PlayerInvetory inventory;
 
     public static Action<PlayerData> dataLoaded;
 
     private void OnEnable()
     {
-        InputManager.PickupItem += SaveData;
+        SavePoint.saveTheGame += SaveData;
     }
     private void OnDisable()
     {
-        InputManager.PickupItem -= SaveData;
+        SavePoint.saveTheGame -= SaveData;
     }
 
 
     private void Awake()
     {
         saveFile = Application.dataPath + "/savedData.json";
+        Debug.Log(saveFile);
+        
    
     }
     private void Start()
     {
+        inventory = player.GetComponent<PlayerInvetory>();
         LoadData();
     }
     private void LoadData()
     {
         if (File.Exists(saveFile))
         {
+            
             string content = File.ReadAllText(saveFile);
-            playerSettings = JsonUtility.FromJson<PlayerData>(content);
+            if (content  == "") { return; }
+            playerSettings = JsonUtility.FromJson<PlayerData>(content);            
+
             dataLoaded.Invoke(playerSettings);
             Debug.Log("Player position loaded: " + playerSettings.playerPosition);
             player.transform.position = playerSettings.playerPosition;
+
+            foreach (ItemData item in playerSettings.itemsCollected)
+            {
+                inventory.AddToInventory(item);
+            }
+        
         }
         else
         {
-            Debug.Log("El archivo no existe");
+            File.Create(saveFile);
+            Debug.Log("Archivo creado");
         }
     }
     private void SaveData()
     {
+        string json ="";
+   
         PlayerData newPlayerSettings = new()
         {
-            playerPosition = player.transform.position,      
+            playerPosition = player.transform.position,
+            itemsCollected = inventory.itemsCollected
         };
-        string json = JsonUtility.ToJson(newPlayerSettings);    
+
+
+        json = JsonUtility.ToJson(newPlayerSettings);    
         File.WriteAllText(saveFile, json);
 
         Debug.Log("Saved data");

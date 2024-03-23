@@ -23,11 +23,22 @@ public class HUD : MonoBehaviour
         inventory.ToggleInventory();
     }
 
-    public void OpenItemPanel(Item item)
+    public void OpenItemPanel(IInteractable interactable)
     {
         messagePanel.SetActive(true);
-        messagePanel.GetComponentInChildren<TextMeshProUGUI>().text= "Press E to take " + item.name;
-        
+        string text = "";
+        if (interactable is Item)
+        {
+            Item item = interactable as Item;   
+            text = "Press E to take " + item.name;
+        }
+        else if (interactable is SavePoint)
+        {
+            SavePoint sP = interactable as SavePoint;
+            text = "Press E to save the game";
+        }
+        messagePanel.GetComponentInChildren<TextMeshProUGUI>().text = text;
+
     }
     public void CloseItemPanel()
     {

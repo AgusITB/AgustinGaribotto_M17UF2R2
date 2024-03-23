@@ -29,6 +29,7 @@ Material:
     m_Ints: []
     m_Floats:
     - Vector1_67E09C3A: 9.94
+    - _QueueControl: 0
     m_Colors:
     - Color_BE49A3B1: {r: 1, g: 0.35294116, b: 0, a: 1}
   m_BuildTextureStacks: []

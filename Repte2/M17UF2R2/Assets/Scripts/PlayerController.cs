@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
     bool GroundedPlayer { get; set; }
     bool IsCrouching { get; set; }
     bool IsFalling { get; set; }
-    bool InventoryIsOpened { get; set; }
 
     //[SerializeField] bool isLanding = false;
 
@@ -71,20 +70,17 @@ public class PlayerController : MonoBehaviour
 
     private Rig pistolArmRig;
 
-    [SerializeField] private GameObject pouch;
+    [SerializeField] private GameObject[] pouches;
 
     [SerializeField] private HUD Hud;
 
-    [SerializeField] private Item pickableItem;
+    [SerializeField] private IInteractable interactableObj;
 
-    private PlayerInvetory inventory;
+    public static PlayerInvetory inventory;
 
     private void Start()
     {
         inputManager = InputManager.Instance;
-
-
-
     }
     private void Awake()
     {
@@ -95,7 +91,19 @@ public class PlayerController : MonoBehaviour
         SetComponents();
         SetAnimatorIDs();
     }
+    public GameObject GetFreePouchSpace()
+    {
+        foreach (GameObject pouch in pouches)
+        {
+            if (pouch.GetComponentsInChildren<Transform>().Length>1)
+                continue;
 
+            else 
+                return pouch;
+     
+        }
+        return null;
+    }
     private void SetComponents()
     {
         pistolArmRig = GetComponentInChildren<Rig>();
@@ -124,7 +132,7 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerAimed += StartAiming;
         InputManager.PlayerDied += Die;
         InputManager.PlayerCrouched += Crouch;
-        InputManager.PickupItem += PickUpItem;
+        InputManager.PickupItem += Interact;
         GameDataManager.dataLoaded += ApplyData;
 
     }
@@ -134,43 +142,44 @@ public class PlayerController : MonoBehaviour
         InputManager.PlayerAimed -= StartAiming;
         InputManager.PlayerDied -= Die;
         InputManager.PlayerCrouched -= Crouch;
-        InputManager.PickupItem -= PickUpItem;
+        InputManager.PickupItem -= Interact;
         GameDataManager.dataLoaded -= ApplyData;
     }
 
     private void ApplyData(PlayerData data)
     {
-        this.transform.position = data.playerPosition;
-    }
-    private void PickUpItem()
-    {
-
-
-        if (pickableItem != null)
+        if (data != null)
         {
-            pickableItem.transform.SetParent(pouch.transform,false);
-            pickableItem.transform.position = pouch.transform.position;
-            pickableItem.Collect();
-            Hud.CloseItemPanel();
-            inventory.AddToInventory(pickableItem);
-
-            pickableItem = null;
+            this.transform.position = data.playerPosition;
         }
+       
+    }
+    private void Interact()
+    {
+        if (interactableObj != null)
+        {
+            interactableObj.Interact();
+
+
+            Hud.CloseItemPanel();     
+            interactableObj = null;
+        }
+
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out ICollectable item))
+        if (other.TryGetComponent(out IInteractable item))
         {
-            Hud.OpenItemPanel((Item)item);
-            pickableItem = (Item)item;
+            Hud.OpenItemPanel(item);
+            interactableObj = item;
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out ICollectable _))
+        if (other.TryGetComponent(out IInteractable _))
         {
             Hud.CloseItemPanel();
-            pickableItem = null;
+            interactableObj = null;
         }
     }
 
