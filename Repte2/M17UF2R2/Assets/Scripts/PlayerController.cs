@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.InputSystem;
-
 
 public class PlayerController : MonoBehaviour
 {
@@ -81,6 +78,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         inputManager = InputManager.Instance;
+       
     }
     private void Awake()
     {
@@ -159,8 +157,6 @@ public class PlayerController : MonoBehaviour
         if (interactableObj != null)
         {
             interactableObj.Interact();
-
-
             Hud.CloseItemPanel();     
             interactableObj = null;
         }

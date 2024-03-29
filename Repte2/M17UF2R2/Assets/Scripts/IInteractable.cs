@@ -1,6 +1,4 @@
-﻿using System;
-
-public interface IInteractable
+﻿public interface IInteractable
 {
     public void Interact();
 

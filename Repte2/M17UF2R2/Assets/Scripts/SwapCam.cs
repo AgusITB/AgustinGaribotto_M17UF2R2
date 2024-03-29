@@ -1,7 +1,6 @@
 using UnityEngine;
 using Cinemachine;
 
-
 public class SwapCam : MonoBehaviour
 {
     [SerializeField] int priorityBoostAmount = 10;

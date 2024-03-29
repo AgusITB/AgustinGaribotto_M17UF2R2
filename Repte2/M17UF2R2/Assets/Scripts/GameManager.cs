@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
         gun.SetActive(false);
         crosshair.SetActive(false);
     }
-
     private void OnEnable()
     {
         InputManager.PlayerAimed += ActivateWeapon;

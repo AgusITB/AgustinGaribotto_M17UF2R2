@@ -3,28 +3,10 @@ using UnityEngine;
 
 public class PlayerInvetory : MonoBehaviour
 {
-   [SerializeField] public List<ItemData> itemsCollected = new List<ItemData>();
+    public List<Item> itemObjects = new();
 
-    public void AddToInventory(ItemData item)
+    public void AddToList(Item item)
     {
-        itemsCollected.Add(item);
+        itemObjects.Add(item);
     }
-
-    private void BuildInventory()
-    {
-        itemsCollected = new List<ItemData>( 
-          
-            
-            
-            );
-    }
-
-
-    public void RemoveFromInventory(ItemData item)
-    {
-        itemsCollected.Remove(item);
-    }
-
-
-
 }

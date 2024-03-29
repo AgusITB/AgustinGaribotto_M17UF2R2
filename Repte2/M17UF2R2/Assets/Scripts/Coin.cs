@@ -21,11 +21,11 @@ public class Coin : Item
             transform.SetParent(parentTransform);
             transform.localScale = Vector3.one/2;
             transform.position = parentTransform.position;
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
+            //PlayerController.inventory.AddToInventory(new ItemData(this));
+            PlayerController.inventory.AddToList(this);
 
-            PlayerController.inventory.AddToInventory(new ItemData(this));
             GetComponent<BoxCollider>().enabled = false;
             Animator animator = GetComponentInChildren<Animator>();
             animator.SetTrigger("Taken");

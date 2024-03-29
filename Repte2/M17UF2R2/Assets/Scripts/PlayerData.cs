@@ -4,6 +4,6 @@ using UnityEngine;
 public class PlayerData
 {
     public Vector3 playerPosition;
-    public List<ItemData> itemsCollected;
+    public List<Item> itemsCollected;
 
 }

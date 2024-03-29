@@ -1,8 +1,5 @@
-using System;
 using TMPro;
 using UnityEngine;
-
-
 
 public class HUD : MonoBehaviour
 {
@@ -34,7 +31,6 @@ public class HUD : MonoBehaviour
         }
         else if (interactable is SavePoint)
         {
-            SavePoint sP = interactable as SavePoint;
             text = "Press E to save the game";
         }
         messagePanel.GetComponentInChildren<TextMeshProUGUI>().text = text;

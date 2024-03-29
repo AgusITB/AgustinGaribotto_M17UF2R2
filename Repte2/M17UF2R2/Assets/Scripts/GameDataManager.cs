@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -16,6 +15,7 @@ public class GameDataManager : MonoBehaviour
 
     public static Action<PlayerData> dataLoaded;
 
+
     private void OnEnable()
     {
         SavePoint.saveTheGame += SaveData;
@@ -25,35 +25,35 @@ public class GameDataManager : MonoBehaviour
         SavePoint.saveTheGame -= SaveData;
     }
 
-
     private void Awake()
     {
         saveFile = Application.dataPath + "/savedData.json";
-        Debug.Log(saveFile);
-        
+       
    
     }
     private void Start()
     {
         inventory = player.GetComponent<PlayerInvetory>();
-        LoadData();
+        StartCoroutine(LoadData());
+     
     }
-    private void LoadData()
+    private IEnumerator LoadData()
     {
+        yield return new WaitForSeconds(1f);
         if (File.Exists(saveFile))
-        {
-            
+        {           
             string content = File.ReadAllText(saveFile);
-            if (content  == "") { return; }
+            if (content  == "") { yield break; }
             playerSettings = JsonUtility.FromJson<PlayerData>(content);            
 
             dataLoaded.Invoke(playerSettings);
             Debug.Log("Player position loaded: " + playerSettings.playerPosition);
+            Debug.Log(saveFile);
             player.transform.position = playerSettings.playerPosition;
 
-            foreach (ItemData item in playerSettings.itemsCollected)
+            foreach (Item item in playerSettings.itemsCollected)
             {
-                inventory.AddToInventory(item);
+                item.Collect();
             }
         
         }
@@ -65,12 +65,12 @@ public class GameDataManager : MonoBehaviour
     }
     private void SaveData()
     {
-        string json ="";
-   
+        string json;
+
         PlayerData newPlayerSettings = new()
         {
             playerPosition = player.transform.position,
-            itemsCollected = inventory.itemsCollected
+            itemsCollected = inventory.itemObjects
         };
 
 
