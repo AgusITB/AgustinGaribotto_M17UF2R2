@@ -14,7 +14,7 @@ public class GameDataManager : MonoBehaviour
     PlayerInvetory inventory;
 
     public static Action<PlayerData> dataLoaded;
-
+    public static Action gameSaved;
 
     private void OnEnable()
     {
@@ -27,9 +27,7 @@ public class GameDataManager : MonoBehaviour
 
     private void Awake()
     {
-        saveFile = Application.dataPath + "/savedData.json";
-       
-   
+        saveFile = Application.dataPath + "/savedData.json";        
     }
     private void Start()
     {
@@ -78,6 +76,7 @@ public class GameDataManager : MonoBehaviour
         File.WriteAllText(saveFile, json);
 
         Debug.Log("Saved data");
+        gameSaved.Invoke();
     }
 }
 
