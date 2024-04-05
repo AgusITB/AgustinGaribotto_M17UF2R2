@@ -3,7 +3,7 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
 
-    const float  cooldown = 1.1f;
+    const float  cooldown = 0f;
     float cd = cooldown;
     bool playerCanShoot = true;
     Animator animator;

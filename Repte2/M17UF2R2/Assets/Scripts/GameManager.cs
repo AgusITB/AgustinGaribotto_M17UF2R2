@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     private GameObject crosshair;
     private bool gunIsActive = false;
 
+    [SerializeField] private GameObject FpCamera;
+    [SerializeField] private GameObject thirdPCamera;
+
     private void Awake()
     {
         Cursor.visible = false;
@@ -33,6 +36,8 @@ public class GameManager : MonoBehaviour
     {
         PlayerController.Instance.enabled = false;
         InputManager.Instance.gameObject.SetActive(false);
+        FpCamera.SetActive(false);
+        thirdPCamera.SetActive(false);
     }
     void ActivateWeapon()
     {

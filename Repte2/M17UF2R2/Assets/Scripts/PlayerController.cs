@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
@@ -326,7 +327,18 @@ public class PlayerController : MonoBehaviour
     }
     private void Die()
     {
+        //StartCoroutine(Death());
         animator.Play("Death");
+        controller.transform.position = new Vector3(controller.transform.position.x, -0.772f, controller.transform.position.z);
         PlayerDied.Invoke();
+    }
+    private IEnumerator Death()
+    {
+        for (float i = 0f; i <= 0.1f; i += 0.1f * Time.deltaTime)
+        {
+            controller.transform.position = Vector3.Lerp(new Vector3(controller.transform.position.x, controller.transform.position.y, controller.transform.position.z), new Vector3(controller.transform.position.x, -0.772f, controller.transform.position.z), i);
+            yield return null;
+        }
+
     }
 }
